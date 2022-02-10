@@ -105,32 +105,42 @@ function valueBetween(value, min, max) {
   return parseInt(value) >= min && parseInt(value) <= max;
 }
 
-function choosePerson(prompt, filter) {
+function choosePerson(prompt, filter, filterMessage) {
+  if (tree.filter(filter).length === 0) {
+    alert(filterMessage);
+    return null;
+  }
+
   const minId = tree.slice(0).sort((a, b) => a.id > b.id)[0].id;
   const maxId = tree.slice(0).sort((a, b) => a.id < b.id)[0].id;
-  return choose(
+  const id = choose(
     `
 ${prompt}
 ${tree.filter(filter).map(formatPerson).join("\n")}
     `,
     (v) => valueBetween(v, minId, maxId)
   );
+  return tree.find((p) => p.id === parseInt(id));
 }
 
-function chooseYear(prompt, minYear, maxYear) {
-  return choose(
-    `
-${prompt}
-Odaberi godinu (${minYear}-${maxYear}):
-    `,
-    (v) => valueBetween(v, minYear, maxYear)
-  );
+function pairBorn(person, year) {
+  const personBorn = person.birthYear < year;
+  const spouse = tree.find((s) => s.id === person.spouseId);
+  const spouseBorn = spouse.birthYear < year;
+  return personBorn && spouseBorn;
+}
+
+function pairDead(person, year) {
+  const personDead = person.deathYear !== null && person.deathYear < year;
+  const spouse = tree.find((s) => s.id === person.spouseId);
+  const spouseDead = spouse.deathYear !== null && spouse.deathYear < year;
+  return personDead || spouseDead;
 }
 
 // screens
 
 function mainMenu() {
-  choose(
+  const i = choose(
     `
 1 - Upis rođenja
 2 - Upis ženidbe
@@ -140,6 +150,61 @@ exit - izlaz iz programa (radi u svim menijima)
   `,
     (v) => valueBetween(v, 1, 4)
   );
+  const next = [addBirth, addMarriage, addDeath, statsMenu];
+  return next[i - 1]();
+}
+
+function addBirth() {
+  firstName = choose("Unesi ime:", () => true);
+  birthYear = parseInt(
+    choose("Unesi godinu rođenja (1900-2022):", (v) =>
+      valueBetween(v, 1900, 2022)
+    )
+  );
+  sex = choose("Unesi spol (M/F):", (v) => v === "F" || v === "M");
+
+  father = choosePerson(
+    "Odaberi oca:",
+    (p) =>
+      p.sex === "M" &&
+      p.spouseId !== null &&
+      pairBorn(p, birthYear) &&
+      !pairDead(p, birthYear),
+    `Čini se da su svi kandidati za oca umrli ili se još nisu rodili :/
+Hint: smanjite/povećajte godinu rođenja`
+  );
+  if (father === null) {
+    return addBirth();
+  }
+
+  const maxId = tree.slice(0).sort((a, b) => a.id < b.id)[0].id;
+
+  tree.push({
+    id: maxId + 1,
+    firstName: firstName,
+    lastName: father.lastName,
+    sex: sex,
+    birthYear: birthYear,
+    deathYear: null,
+    motherId: father.spouseId,
+    fatherId: father.id,
+    spouseId: null,
+  });
+
+  alert("Rođenje uspješno upisano");
+  return mainMenu();
+}
+
+function addMarriage() {
+  alert("todo");
+}
+
+function addDeath() {
+  alert("todo");
+}
+
+function statsMenu() {
+  alert("todo");
 }
 
 mainMenu();
