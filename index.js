@@ -1,3 +1,5 @@
+// seed
+
 const tree = [
   {
     id: 1,
@@ -78,4 +80,66 @@ const tree = [
   },
 ];
 
-alert("hi");
+// helpers
+
+function formatPerson(p) {
+  let lastName = p.lastName;
+  if (p.sex === "F" && p.spouseId !== null) {
+    const spouseLastName = tree.find((s) => s.id === p.spouseId).lastName;
+    lastName = `${spouseLastName} (${p.lastName})`;
+  }
+  return `${p.id} - ${p.firstName} ${lastName}`;
+}
+
+function choose(message, validate) {
+  let value = prompt(message);
+  if (value === "exit") throw new Error("exit");
+  while (!validate(value)) {
+    value = prompt(message + "\nPogreška. Pokušaj ponovo:");
+    if (value === "exit") throw new Error("exit");
+  }
+  return value;
+}
+
+function valueBetween(value, min, max) {
+  return parseInt(value) >= min && parseInt(value) <= max;
+}
+
+function choosePerson(prompt, filter) {
+  const minId = tree.slice(0).sort((a, b) => a.id > b.id)[0].id;
+  const maxId = tree.slice(0).sort((a, b) => a.id < b.id)[0].id;
+  return choose(
+    `
+${prompt}
+${tree.filter(filter).map(formatPerson).join("\n")}
+    `,
+    (v) => valueBetween(v, minId, maxId)
+  );
+}
+
+function chooseYear(prompt, minYear, maxYear) {
+  return choose(
+    `
+${prompt}
+Odaberi godinu (${minYear}-${maxYear}):
+    `,
+    (v) => valueBetween(v, minYear, maxYear)
+  );
+}
+
+// screens
+
+function mainMenu() {
+  choose(
+    `
+1 - Upis rođenja
+2 - Upis ženidbe
+3 - Upis smrti
+4 - Statistika
+exit - izlaz iz programa (radi u svim menijima)
+  `,
+    (v) => valueBetween(v, 1, 4)
+  );
+}
+
+mainMenu();
