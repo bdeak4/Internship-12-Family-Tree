@@ -5,7 +5,7 @@ const tree = [
     id: 1,
     firstName: "Vito",
     lastName: "Corleone",
-    sex: "M",
+    gender: "M",
     birthYear: 1892,
     deathYear: 1954,
     motherId: null,
@@ -16,7 +16,7 @@ const tree = [
     id: 2,
     firstName: "Carmella",
     lastName: "Not-Corleone", // ???
-    sex: "F",
+    gender: "F",
     birthYear: 1897,
     deathYear: 1959,
     motherId: null,
@@ -27,7 +27,7 @@ const tree = [
     id: 3,
     firstName: "Sonny",
     lastName: "Corleone",
-    sex: "M",
+    gender: "M",
     birthYear: 1916,
     deathYear: 1948,
     motherId: 2,
@@ -38,7 +38,7 @@ const tree = [
     id: 4,
     firstName: "Fredo",
     lastName: "Corleone",
-    sex: "M",
+    gender: "M",
     birthYear: 1919,
     deathYear: 1959,
     motherId: 2,
@@ -49,7 +49,7 @@ const tree = [
     id: 5,
     firstName: "Michael",
     lastName: "Corleone",
-    sex: "M",
+    gender: "M",
     birthYear: 1920,
     deathYear: 1997,
     motherId: 2,
@@ -60,7 +60,7 @@ const tree = [
     id: 6,
     firstName: "Connie",
     lastName: "Corleone",
-    sex: "F",
+    gender: "F",
     birthYear: 1927,
     deathYear: null,
     motherId: 2,
@@ -71,7 +71,7 @@ const tree = [
     id: 7,
     firstName: "Kay",
     lastName: "Adams",
-    sex: "F",
+    gender: "F",
     birthYear: 1934,
     deathYear: null,
     motherId: null,
@@ -84,7 +84,7 @@ const tree = [
 
 function formatPerson(p) {
   let lastName = p.lastName;
-  if (p.sex === "F" && p.spouseId !== null) {
+  if (p.gender === "F" && p.spouseId !== null) {
     const spouseLastName = tree.find((s) => s.id === p.spouseId).lastName;
     lastName = `${spouseLastName} (${p.lastName})`;
   }
@@ -168,13 +168,14 @@ function addBirth() {
       valueBetween(v, 1900, 2022)
     )
   );
-  sex = choose("Unesi spol (M/F):", (v) => v === "F" || v === "M");
+  gender = choose("Unesi spol (M/F):", (v) => v === "F" || v === "M");
 
   father = choosePerson(
     "Odaberi oca:",
     (p) =>
-      p.sex === "M" &&
+      p.gender === "M" &&
       p.spouseId !== null &&
+      tree.find((s) => s.id === p.spouseId).gender === "F" &&
       pairBorn(p, birthYear) &&
       !pairDead(p, birthYear),
     `Čini se da su svi kandidati za oca umrli ili se još nisu rodili :/
@@ -190,7 +191,7 @@ Hint: smanjite/povećajte godinu rođenja`
     id: maxId + 1,
     firstName: firstName,
     lastName: father.lastName,
-    sex: sex,
+    gender: gender,
     birthYear: birthYear,
     deathYear: null,
     motherId: father.spouseId,
@@ -210,7 +211,7 @@ function addMarriage() {
       valueBetween(v, 1900, 2022)
     )
   );
-  sex = choose("Unesi spol (M/F):", (v) => v === "F" || v === "M");
+  gender = choose("Unesi spol (M/F):", (v) => v === "F" || v === "M");
 
   spouse = choosePerson(
     `Odaberi partnera/icu:`,
@@ -227,7 +228,7 @@ function addMarriage() {
     id: maxId + 1,
     firstName: firstName,
     lastName: lastName,
-    sex: sex,
+    gender: gender,
     birthYear: birthYear,
     deathYear: null,
     motherId: null,
