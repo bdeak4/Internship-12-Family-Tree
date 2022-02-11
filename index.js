@@ -94,7 +94,7 @@ function formatPerson(p) {
 function choose(message, validate) {
   let value = prompt(message);
   if (value === "exit") throw new Error("exit");
-  while (!validate(value)) {
+  while (!validate(value || "")) {
     value = prompt(message + "\nPogreška. Pokušaj ponovo:");
     if (value === "exit") throw new Error("exit");
   }
@@ -137,6 +137,13 @@ function pairDead(person, year) {
   return personDead || spouseDead;
 }
 
+function updatePerson(id, key, value) {
+  const idx = tree.findIndex((p) => p.id === id);
+  if (idx !== -1) {
+    tree[idx][key] = value;
+  }
+}
+
 // screens
 
 function mainMenu() {
@@ -155,7 +162,7 @@ exit - izlaz iz programa (radi u svim menijima)
 }
 
 function addBirth() {
-  firstName = choose("Unesi ime:", () => true);
+  firstName = choose("Unesi ime:", (v) => v.length > 0);
   birthYear = parseInt(
     choose("Unesi godinu rođenja (1900-2022):", (v) =>
       valueBetween(v, 1900, 2022)
@@ -196,7 +203,42 @@ Hint: smanjite/povećajte godinu rođenja`
 }
 
 function addMarriage() {
-  alert("todo");
+  firstName = choose("Unesi ime:", (v) => v.length > 0);
+  lastName = choose("Unesi prezime:", (v) => v.length > 0);
+  birthYear = parseInt(
+    choose("Unesi godinu rođenja (1900-2022):", (v) =>
+      valueBetween(v, 1900, 2022)
+    )
+  );
+  sex = choose("Unesi spol (M/F):", (v) => v === "F" || v === "M");
+
+  spouse = choosePerson(
+    `Odaberi partnera/icu:`,
+    (p) => p.spouseId === null && p.deathYear === null,
+    "Čini se da su trenutno svi zauzeti... ili su svi umrli"
+  );
+  if (spouse === null) {
+    return mainMenu();
+  }
+
+  const maxId = tree.slice(0).sort((a, b) => a.id < b.id)[0].id;
+
+  tree.push({
+    id: maxId + 1,
+    firstName: firstName,
+    lastName: lastName,
+    sex: sex,
+    birthYear: birthYear,
+    deathYear: null,
+    motherId: null,
+    fatherId: null,
+    spouseId: spouse.id,
+  });
+
+  updatePerson(spouse.id, "spouseId", maxId + 1);
+
+  alert("Ženidba uspješno upisana");
+  return mainMenu();
 }
 
 function addDeath() {
