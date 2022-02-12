@@ -111,14 +111,14 @@ function choosePerson(prompt, filter, filterMessage) {
     return null;
   }
 
-  const minId = tree.slice(0).sort((a, b) => a.id > b.id)[0].id;
-  const maxId = tree.slice(0).sort((a, b) => a.id < b.id)[0].id;
+  const ids = tree.filter(filter).map((p) => p.id);
+
   const id = choose(
     `
 ${prompt}
 ${tree.filter(filter).map(formatPerson).join("\n")}
     `,
-    (v) => valueBetween(v, minId, maxId)
+    (v) => ids.includes(parseInt(v))
   );
   return tree.find((p) => p.id === parseInt(id));
 }
