@@ -269,7 +269,49 @@ function addDeath() {
 }
 
 function statsMenu() {
+  const i = choose(
+    `
+1 - Koliko razina predaka postoji od određenog člana stabla do vrhovnog pretka
+2 - Ispis imena sve braće i sestara koju određeni član ima
+3 - Prosječna životna dob članova obitelji za pojedini spol
+4 - Tablica učestalosti imena u obitelji
+5 - Ispis obiteljskog stabla
+  `,
+    (v) => valueBetween(v, 1, 5)
+  );
+  const next = [
+    showNumOfAncestors,
+    showSiblings,
+    showAvgAgeByGender,
+    showFirstNameFrequency,
+    showFamilyTree,
+  ];
+  return next[i - 1]();
+}
+
+function showNumOfAncestors() {
   alert("todo");
+  return statsMenu();
+}
+
+function showSiblings() {
+  alert("todo");
+  return statsMenu();
+}
+
+function showAvgAgeByGender() {
+  alert("todo");
+  return statsMenu();
+}
+
+function showFirstNameFrequency() {
+  alert("todo");
+  return statsMenu();
+}
+
+function showFamilyTree() {
+  alert("todo");
+  return statsMenu();
 }
 
 mainMenu();
