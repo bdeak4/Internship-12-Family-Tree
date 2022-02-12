@@ -82,11 +82,15 @@ const tree = [
 
 // helpers
 
+function findById(id) {
+  return tree.find((p) => p.id === id);
+}
+
 function formatPerson(p) {
   let lastName = p.lastName;
-  if (p.gender === "F" && p.spouseId !== null) {
-    const spouseLastName = tree.find((s) => s.id === p.spouseId).lastName;
-    lastName = `${spouseLastName} (${p.lastName})`;
+  const spouse = findById(p.spouseId);
+  if (p.gender === "F" && spouse && spouse.gender === "M") {
+    lastName = `${spouse.lastName} (${p.lastName})`;
   }
   return `${p.id} - ${p.firstName} ${lastName}`;
 }
@@ -120,19 +124,19 @@ ${tree.filter(filter).map(formatPerson).join("\n")}
     `,
     (v) => ids.includes(parseInt(v))
   );
-  return tree.find((p) => p.id === parseInt(id));
+  return findById(parseInt(id));
 }
 
 function pairBorn(person, year) {
   const personBorn = person.birthYear < year;
-  const spouse = tree.find((s) => s.id === person.spouseId);
+  const spouse = findById(person.spouseId);
   const spouseBorn = spouse.birthYear < year;
   return personBorn && spouseBorn;
 }
 
 function pairDead(person, year) {
   const personDead = person.deathYear !== null && person.deathYear < year;
-  const spouse = tree.find((s) => s.id === person.spouseId);
+  const spouse = findById(person.spouseId);
   const spouseDead = spouse.deathYear !== null && spouse.deathYear < year;
   return personDead || spouseDead;
 }
@@ -179,7 +183,7 @@ function addBirth() {
     (p) =>
       p.gender === "M" &&
       p.spouseId !== null &&
-      tree.find((s) => s.id === p.spouseId).gender === "F" &&
+      findById(p.spouseId).gender === "F" &&
       pairBorn(p, birthYear) &&
       !pairDead(p, birthYear),
     `Čini se da su svi kandidati za oca umrli ili se još nisu rodili :/
@@ -243,7 +247,25 @@ function addMarriage() {
 }
 
 function addDeath() {
-  alert("todo");
+  person = choosePerson(
+    `Odaberi osobu:`,
+    (p) => p.deathYear === null,
+    "Čini se da su svi već umrli :/"
+  );
+  if (person === null) {
+    return mainMenu();
+  }
+
+  deathYear = parseInt(
+    choose(`Unesi godinu smrti (${person.birthYear}-2022):`, (v) =>
+      valueBetween(v, person.birthYear, 2022)
+    )
+  );
+
+  updatePerson(person.id, "deathYear", deathYear);
+
+  alert("Smrt uspješno upisana");
+  return mainMenu();
 }
 
 function statsMenu() {
