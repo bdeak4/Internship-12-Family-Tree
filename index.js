@@ -144,6 +144,10 @@ function updatePerson(id, key, value) {
   }
 }
 
+function newId() {
+  return tree.slice(0).sort((a, b) => a.id < b.id)[0].id + 1;
+}
+
 // screens
 
 function mainMenu() {
@@ -185,10 +189,8 @@ Hint: smanjite/povećajte godinu rođenja`
     return addBirth();
   }
 
-  const maxId = tree.slice(0).sort((a, b) => a.id < b.id)[0].id;
-
   tree.push({
-    id: maxId + 1,
+    id: newId(),
     firstName: firstName,
     lastName: father.lastName,
     gender: gender,
@@ -222,10 +224,9 @@ function addMarriage() {
     return mainMenu();
   }
 
-  const maxId = tree.slice(0).sort((a, b) => a.id < b.id)[0].id;
-
+  const id = newId();
   tree.push({
-    id: maxId + 1,
+    id: id,
     firstName: firstName,
     lastName: lastName,
     gender: gender,
@@ -235,8 +236,7 @@ function addMarriage() {
     fatherId: null,
     spouseId: spouse.id,
   });
-
-  updatePerson(spouse.id, "spouseId", maxId + 1);
+  updatePerson(spouse.id, "spouseId", id);
 
   alert("Ženidba uspješno upisana");
   return mainMenu();
