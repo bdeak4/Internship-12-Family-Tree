@@ -183,6 +183,18 @@ function avgAgeByGender(gender) {
   return (sum / people.length).toFixed(2);
 }
 
+function familyTree(person, indent) {
+  let output = " ".repeat(indent) + formatPerson(person) + "\n";
+  if (person.spouseId !== null) {
+    output +=
+      " ".repeat(indent) + formatPerson(findById(person.spouseId)) + "\n";
+  }
+  for (p of tree.filter((p) => p.fatherId === person.id)) {
+    output += familyTree(p, indent + 4);
+  }
+  return output;
+}
+
 // screens
 
 function mainMenu() {
@@ -307,8 +319,9 @@ function statsMenu() {
 3 - Prosječna životna dob članova obitelji za pojedini spol
 4 - Tablica učestalosti imena u obitelji
 5 - Ispis obiteljskog stabla
+6 - Povratak u glavni izbornik
   `,
-    (v) => valueBetween(v, 1, 5)
+    (v) => valueBetween(v, 1, 6)
   );
   const next = [
     showNumOfAncestors,
@@ -316,6 +329,7 @@ function statsMenu() {
     showAvgAgeByGender,
     showFirstNameFrequency,
     showFamilyTree,
+    mainMenu,
   ];
   return next[i - 1]();
 }
@@ -392,7 +406,12 @@ ${Object.keys(countByName)
 }
 
 function showFamilyTree() {
-  alert("todo");
+  alert(
+    `
+Obiteljsko stablo:
+${familyTree(findById(1), 0)}
+    `
+  );
   return statsMenu();
 }
 
