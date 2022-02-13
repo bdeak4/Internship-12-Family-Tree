@@ -174,7 +174,7 @@ function avgAgeByGender(gender) {
   const people = tree.filter(
     (p) => p.gender === gender && (p.fatherId !== null || gender === "M")
   );
-  for (person of people) {
+  for (let person of people) {
     sum +=
       person.deathYear === null
         ? 2022 - person.birthYear
@@ -189,7 +189,7 @@ function familyTree(person, indent) {
     output +=
       " ".repeat(indent) + formatPerson(findById(person.spouseId)) + "\n";
   }
-  for (p of tree.filter((p) => p.fatherId === person.id)) {
+  for (let p of tree.filter((p) => p.fatherId === person.id)) {
     output += familyTree(p, indent + 4);
   }
   return output;
@@ -389,7 +389,7 @@ Prosječna životna dob muškaraca: ${avgAgeByGender("M")} godina
 
 function showFirstNameFrequency() {
   const countByName = {};
-  for (firstName of tree.map((p) => p.firstName)) {
+  for (let firstName of tree.map((p) => p.firstName)) {
     countByName[firstName] =
       firstName in countByName ? countByName[firstName] + 1 : 1;
   }
