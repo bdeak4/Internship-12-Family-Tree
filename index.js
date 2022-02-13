@@ -169,6 +169,20 @@ function countAncestors(person, count) {
   return countAncestors(findById(person.fatherId), ++count);
 }
 
+function avgAgeByGender(gender) {
+  let sum = 0;
+  const people = tree.filter(
+    (p) => p.gender === gender && (p.fatherId !== null || gender === "M")
+  );
+  for (person of people) {
+    sum +=
+      person.deathYear === null
+        ? 2022 - person.birthYear
+        : person.deathYear - person.birthYear;
+  }
+  return (sum / people.length).toFixed(2);
+}
+
 // screens
 
 function mainMenu() {
@@ -350,7 +364,12 @@ ${siblings.map(formatPerson).join("\n")}
 }
 
 function showAvgAgeByGender() {
-  alert("todo");
+  alert(
+    `
+Prosječna životna dob žena: ${avgAgeByGender("F")} godina
+Prosječna životna dob muškaraca: ${avgAgeByGender("M")} godina
+  `
+  );
   return statsMenu();
 }
 
