@@ -374,7 +374,20 @@ Prosječna životna dob muškaraca: ${avgAgeByGender("M")} godina
 }
 
 function showFirstNameFrequency() {
-  alert("todo");
+  const countByName = {};
+  for (firstName of tree.map((p) => p.firstName)) {
+    countByName[firstName] =
+      firstName in countByName ? countByName[firstName] + 1 : 1;
+  }
+  alert(
+    `
+Tablica učestalosti imena u obitelji
+${Object.keys(countByName)
+  .sort((a, b) => countByName[a] < countByName[b])
+  .map((n) => `${countByName[n]} - ${n}`)
+  .join("\n")}
+  `
+  );
   return statsMenu();
 }
 
