@@ -152,6 +152,23 @@ function newId() {
   return tree.slice(0).sort((a, b) => a.id < b.id)[0].id + 1;
 }
 
+function countAncestors(person, count) {
+  const spouse = findById(person.spouseId);
+  if (
+    person.gender === "F" &&
+    person.fatherId === null &&
+    spouse &&
+    spouse.gender === "M"
+  ) {
+    person = spouse;
+  }
+
+  if (person.fatherId === null) {
+    return count;
+  }
+  return countAncestors(findById(person.fatherId), ++count);
+}
+
 // screens
 
 function mainMenu() {
@@ -290,7 +307,17 @@ function statsMenu() {
 }
 
 function showNumOfAncestors() {
-  alert("todo");
+  person = choosePerson(
+    `Odaberi osobu:`,
+    () => true,
+    "Nema osoba u obiteljskom stablu"
+  );
+  if (person === null) {
+    return mainMenu();
+  }
+
+  alert(`Broj predaka: ${countAncestors(person, 0)}`);
+
   return statsMenu();
 }
 
