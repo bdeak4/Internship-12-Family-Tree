@@ -322,7 +322,30 @@ function showNumOfAncestors() {
 }
 
 function showSiblings() {
-  alert("todo");
+  person = choosePerson(
+    `Odaberi osobu:`,
+    () => true,
+    "Nema osoba u obiteljskom stablu"
+  );
+  if (person === null) {
+    return mainMenu();
+  }
+
+  if (person.fatherId === null) {
+    alert("Osoba nema braće i sestara");
+    return statsMenu();
+  }
+
+  const siblings = tree.filter(
+    (p) => p.fatherId === person.fatherId && p.id !== person.id
+  );
+
+  alert(
+    `
+Ispis braće i sestara:
+${siblings.map(formatPerson).join("\n")}
+  `
+  );
   return statsMenu();
 }
 
