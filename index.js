@@ -149,7 +149,7 @@ function updatePerson(id, key, value) {
 }
 
 function newId() {
-  return tree.slice(0).sort((a, b) => a.id < b.id)[0].id + 1;
+  return [...tree].sort((a, b) => a.id < b.id)[0].id + 1;
 }
 
 function countAncestors(person, count) {
